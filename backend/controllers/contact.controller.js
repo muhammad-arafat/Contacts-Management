@@ -1,15 +1,16 @@
 import slugify from "slugify";
-import ContactInfo from "../models/contact.model";
-import contactValidation from "../joiSchema/contact.validation";
+import ContactInfo from "../models/contact.model.js";
+import contactValidation from "../joiSchema/contact.validation.js";
 
 export const create = async (req, res) => {
   try {
-    console.log(req.body);
+    console.log("inside create", req.body);
     const { error } = contactValidation.validate(req.body);
     if (error) {
-      return res.status(400).send({ error: error.details[0].message });
+      const joiError = error.message;
+      console.log("joi error", joiError);
+      return res.status(400).json(joiError);
     }
-
     req.body.slug = slugify(req.body.name);
     const contact = await new ContactInfo(req.body).save();
     res.json(contact);

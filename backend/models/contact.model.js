@@ -15,15 +15,15 @@ const contactSchema = new mongoose.Schema(
     email: {
       type: String,
     },
-    phoneNumber: {
-      type: Number,
+    phone: {
+      type: String,
       required: true,
     },
     address: {
       type: String,
       required: true,
     },
-    profilePicture: {
+    photo: {
       type: String,
       required: true,
     },

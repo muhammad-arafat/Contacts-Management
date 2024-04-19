@@ -1,11 +1,12 @@
 import express from "express";
+
 import {
   allList,
   create,
   read,
   remove,
   update,
-} from "../controllers/category.controller";
+} from "../controllers/contact.controller.js";
 
 const router = express.Router();
 

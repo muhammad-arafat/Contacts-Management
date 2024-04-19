@@ -1,10 +1,43 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { addContact } from "../contactsSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../store";
 
 const AddContacts: React.FC = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    address: "",
+    photo: "",
+  });
+
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
+
   const handleContactSubmission = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    dispatch(addContact(formData));
+    // setFormData({
+    //   name: "",
+    //   email: "",
+    //   phone: "",
+    //   address: "",
+    //   photo: "",
+    // });
   };
+  const { error } = useSelector((state: RootState) => state.contacts);
+
+  console.log(error);
 
   return (
     <div className=' max-w-xl mx-auto mt-10 px-5 sm:px-3'>
@@ -25,6 +58,8 @@ const AddContacts: React.FC = () => {
             type='text'
             required
             name='name'
+            value={formData.name}
+            onChange={handleInputChange}
             id=''
           />
 
@@ -32,6 +67,8 @@ const AddContacts: React.FC = () => {
           <input
             className='h-10 px-4 rounded-lg bg-gray-400 outline-none text-white text-xl'
             name='email'
+            value={formData.email}
+            onChange={handleInputChange}
             type='email'
             maxLength={500}
           />
@@ -39,6 +76,8 @@ const AddContacts: React.FC = () => {
           <input
             className='bg-gray-400 h-10 px-4 rounded-lg outline-none text-white text-xl'
             name='phone'
+            value={formData.phone}
+            onChange={handleInputChange}
             type='number'
             required
           />
@@ -46,6 +85,8 @@ const AddContacts: React.FC = () => {
           <textarea
             className='bg-gray-400 h-15 rounded-lg border-black p-4 outline-none text-white text-xl'
             name='address'
+            value={formData.address}
+            onChange={handleInputChange}
             required
           />
 
@@ -55,6 +96,8 @@ const AddContacts: React.FC = () => {
             type='text'
             required
             name='photo'
+            value={formData.photo}
+            onChange={handleInputChange}
             id=''
           />
           <div className='pt-3'>
