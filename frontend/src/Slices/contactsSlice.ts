@@ -90,11 +90,16 @@ export const fetchContactBySlug = createAsyncThunk(
 export const updateContact = createAsyncThunk(
   "contacts/updateContact",
   async ({ slug, contactData }: { slug: string; contactData: Contact }) => {
-    const response = await axiosPublic.patch(
-      `api/v1/contact-information/${slug}`,
-      contactData
-    );
-    return response.data;
+    try {
+      const response = await axiosPublic.patch(
+        `api/v1/contact-information/${slug}`,
+        contactData
+      );
+      return response.data;
+    } catch (error) {
+      console.log(error);
+      return error;
+    }
   }
 );
 
@@ -109,7 +114,6 @@ export const deleteContact = createAsyncThunk(
           withCredentials: true,
         }
       );
-      toast.success("Contact deleted successfully.");
       return response;
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -170,13 +174,6 @@ export const contactsSlice = createSlice({
       })
 
       // single contact update status
-      .addCase(updateContact.pending, state => {
-        state.loading = true;
-      })
-      .addCase(updateContact.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message ?? "An error occurred";
-      })
       .addCase(updateContact.fulfilled, (state, action) => {
         state.loading = false;
         const updatedContact = action.payload;
@@ -186,18 +183,25 @@ export const contactsSlice = createSlice({
         ) {
           state.singleContact = updatedContact;
         }
-        const contactIndex = state.fetchedContacts.findIndex(
-          contact => contact.slug === updatedContact.slug
+        state.fetchedContacts = state.fetchedContacts.map(contact =>
+          contact.slug === updatedContact.slug ? updatedContact : contact
         );
-        if (contactIndex !== -1) {
-          state.fetchedContacts[contactIndex] = updatedContact;
-        }
-        const allContactsIndex = state.contacts.findIndex(
-          contact => contact.slug === updatedContact.slug
+        state.contacts = state.contacts.map(contact =>
+          contact.slug === updatedContact.slug ? updatedContact : contact
         );
-        if (allContactsIndex !== -1) {
-          state.contacts[allContactsIndex] = updatedContact;
-        }
+      })
+
+      // delete contact state updates
+      .addCase(deleteContact.fulfilled, (state, action) => {
+        state.loading = false;
+        const deletedSlug = action.payload.data.slug;
+
+        state.fetchedContacts = state.fetchedContacts.filter(
+          contact => contact.slug !== deletedSlug
+        );
+        state.contacts = state.contacts.filter(
+          contact => contact.slug !== deletedSlug
+        );
       });
   },
 });

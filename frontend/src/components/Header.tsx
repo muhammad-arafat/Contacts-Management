@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { links } from "../lib/data";
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 const Header = () => {
   return (
@@ -19,12 +19,18 @@ const Header = () => {
               initial={{ y: -100, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
             >
-              <Link
-                className=' flex w-full items-center justify-center px-3 py-3 hover:text-gray-950 transition'
+              <NavLink
+                className={({ isActive }) =>
+                  `flex w-full items-center justify-center px-3 py-3 hover:text-gray-950 transition ${
+                    isActive
+                      ? "  text-gray-950 font-bold underline transition"
+                      : ""
+                  }`
+                }
                 to={link.path}
               >
                 {link.name}
-              </Link>
+              </NavLink>
             </motion.li>
           ))}
         </ul>

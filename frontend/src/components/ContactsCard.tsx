@@ -33,9 +33,10 @@ import {
   ModalFooter,
   useDisclosure,
 } from "@chakra-ui/react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../store/store";
+import Swal from "sweetalert2";
 
 interface ContactsCardProps {
   contact: Contact;
@@ -43,8 +44,10 @@ interface ContactsCardProps {
 
 const ContactsCard: React.FC<ContactsCardProps> = ({ contact }) => {
   const { name, email, phone, address, photo, slug } = contact;
+  console.log(contact);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
 
   const handleSingleContactFetching = (slug: string) => {
     dispatch(fetchContactBySlug(slug));
@@ -80,6 +83,8 @@ const ContactsCard: React.FC<ContactsCardProps> = ({ contact }) => {
       return;
     }
     dispatch(updateContact({ slug: eachContact.slug, contactData: formData }));
+    navigate("/");
+
     onClose();
   };
 
@@ -94,7 +99,25 @@ const ContactsCard: React.FC<ContactsCardProps> = ({ contact }) => {
   }, [eachContact]);
 
   const handleDelete = (slug: string) => {
-    dispatch(deleteContact(slug));
+    Swal.fire({
+      title: `Are you sure to delete ?`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: `Yes, delete`,
+    }).then(async result => {
+      if (result.isConfirmed) {
+        dispatch(deleteContact(slug));
+        Swal.fire({
+          position: "top-end",
+          icon: "success",
+          title: `Contact ${slug} deleted successfully`,
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      }
+    });
   };
 
   return (

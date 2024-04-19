@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { addContact } from "../Slices/contactsSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../store/store";
@@ -7,6 +7,7 @@ import { AxiosError } from "axios";
 
 const AddContacts: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -28,13 +29,14 @@ const AddContacts: React.FC = () => {
   const handleContactSubmission = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     dispatch(addContact(formData));
-    // setFormData({
-    //   name: "",
-    //   email: "",
-    //   phone: "",
-    //   address: "",
-    //   photo: "",
-    // });
+    setFormData({
+      name: "",
+      email: "",
+      phone: "",
+      address: "",
+      photo: "",
+    });
+    navigate("/all-contacts");
   };
   const { error }: { error: string | AxiosError } = useSelector(
     (state: RootState) => state.contacts
