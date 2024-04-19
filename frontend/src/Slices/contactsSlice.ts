@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { axiosPublic } from "./hooks/axiosPublic";
+import { axiosPublic } from "../hooks/axiosPublic";
 import { toast } from "react-toastify";
 import axios, { AxiosError } from "axios";
 
-interface Contact {
+export interface Contact {
   name: string;
   email?: string;
   address: string;
@@ -16,8 +16,9 @@ interface ContactsState {
   updateState: boolean;
   loading: boolean;
   contacts: Contact[];
-  error: string;
+  error: string | AxiosError;
   response: string;
+  fetchedContacts: Contact[];
 }
 
 const initialState: ContactsState = {
@@ -26,6 +27,7 @@ const initialState: ContactsState = {
   contacts: [],
   error: "",
   response: "",
+  fetchedContacts: [],
 };
 
 export const addContact = createAsyncThunk(
@@ -51,7 +53,20 @@ export const addContact = createAsyncThunk(
   }
 );
 
-const contactsSlice = createSlice({
+// getting all contacts from db
+export const fetchAllContacts = createAsyncThunk(
+  "contacts/fetchAllContacts",
+  async () => {
+    try {
+      const response = await axiosPublic.get("/api/v1/contact-information");
+      return response.data as Contact[];
+    } catch (error) {
+      throw new Error("Failed to fetch contacts");
+    }
+  }
+);
+
+export const contactsSlice = createSlice({
   name: "contacts",
   initialState,
   reducers: {},
@@ -65,6 +80,19 @@ const contactsSlice = createSlice({
         state.response = action.payload;
       })
       .addCase(addContact.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message ?? "An error occurred";
+      })
+
+      // handling all contacts status
+      .addCase(fetchAllContacts.pending, state => {
+        state.loading = true;
+      })
+      .addCase(fetchAllContacts.fulfilled, (state, action) => {
+        state.loading = false;
+        state.fetchedContacts = action.payload;
+      })
+      .addCase(fetchAllContacts.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message ?? "An error occurred";
       });

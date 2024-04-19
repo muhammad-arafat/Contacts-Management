@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { addContact } from "../contactsSlice";
+import { addContact } from "../Slices/contactsSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../store";
+import { AppDispatch, RootState } from "../store/store";
+import { AxiosError } from "axios";
 
 const AddContacts: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -35,8 +36,9 @@ const AddContacts: React.FC = () => {
     //   photo: "",
     // });
   };
-  const { error } = useSelector((state: RootState) => state.contacts);
-
+  const { error }: { error: string | AxiosError } = useSelector(
+    (state: RootState) => state.contacts
+  );
   console.log(error);
 
   return (
