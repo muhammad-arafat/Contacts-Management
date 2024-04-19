@@ -19,7 +19,7 @@ Before running the project, ensure you have the following installed:
 ## Getting Started
 
 1. Clone the repository:
-2. Run npm build
+2. From root of the folder, Run npm build
 3. For frontend env file:
    VITE_NODE_ENV=development
 4.  For backend env file:
