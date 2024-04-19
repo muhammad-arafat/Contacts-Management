@@ -2,8 +2,10 @@ Setup.env file
 MONGO_URI=...
 PORT=...
 
-Build the app
+Build the app:
+
 npm run build
 
-Start the app
+Start the app:
+
 npm run dev
